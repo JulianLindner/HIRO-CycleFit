@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smooth Zooming Background</title>
+    <style>
+        body {
+            /* Set the entire viewport to be the container */
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex; /* For centering the text */
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevents scrollbars during zoom */
+            font-family: sans-serif;
+            color: #ffffff; /* Text color */
+        }
+
+        .zoom-container {
+            /* 1. Set the SVG as the background image */
+            background-image: url('freihaus drawing.svg');
+            
+            /* 2. Initial state: Cover the entire area */
+            background-size: cover; 
+            
+            /* 3. Keep the image centered */
+            background-position: center center;
+            
+            /* 4. Do not repeat the image */
+            background-repeat: no-repeat;
+            
+            /* Make the container fill the screen */
+            width: 100%;
+            height: 100%;
+            position: absolute; /* Allows it to cover the body */
+            top: 0;
+            left: 0;
+            z-index: -1; /* Place it behind the content */
+
+            /* 5. THE MAGIC: Apply a smooth transition effect */
+            /* Transition background-size over 0.5 seconds with a gentle ease-out curve */
+            transition: background-size 0.5s ease-out;
+        }
+
+        .zoom-container:hover {
+            /* 6. Hover state: Zoom in by making the background image 110% of its size */
+            /* You can adjust this percentage (e.g., 120%) for more zoom */
+            background-size: 110%;
+        }
+
+        /* Styling for the content layer */
+        .content {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay for readability */
+            border-radius: 10px;
+        }
+
+        .content h1 {
+            font-size: 3em;
+            margin-bottom: 0.2em;
+        }
+
+        .content p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="zoom-container"></div>
+    
+    <div class="content">
+        <h1>Zoom Effect Demo</h1>
+        <p>Hover your mouse over this area to see the background image zoom smoothly.</p>
+        <p>The **freihaus drawing.svg** is the background.</p>
+    </div>
+</body>
+</html>
