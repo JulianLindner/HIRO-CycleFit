@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freihaus CycleFit</title>
+    <title>Freihaus CycleFit - Clean Design</title>
     <style>
         body {
             /* Set the entire viewport to be the container */
@@ -14,57 +14,76 @@
             justify-content: center;
             align-items: center;
             overflow: hidden; /* Prevents scrollbars */
-            font-family: sans-serif;
-            color: #ffffff; /* Text color */
-            perspective: 1000px; /* Needed for 3D effects */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            color: #333; /* Dark text for contrast against light grey */
+            perspective: 1000px; 
         }
 
         .zoom-container {
-            /* 1. Set the SVG as the background image */
+            /* Background remains the same */
             background-image: url('Freihaus drawing.svg');
-            
-            /* 2. Initial state: Slightly zoomed in */
-            background-size: 110%; /* Starts at 110% */
-            
-            /* 3. Keep the image centered initially */
+            background-size: 110%;
             background-position: 50% 50%;
-            
-            /* 4. Do not repeat the image */
             background-repeat: no-repeat;
-            
-            /* Make the container fill the screen */
             width: 100%;
             height: 100%;
             position: absolute; 
             top: 0;
             left: 0;
-            z-index: -1; /* Ensures it is behind the content */
-
-            /* 5. SMOOTHNESS: Apply a smooth transition for the movement */
+            z-index: -1; 
             transition: background-position 0.2s ease-out, background-size 0.5s ease-out;
         }
 
         /* Styling for the fixed content layer */
         .content {
-            text-align: center;
-            padding: 30px 40px;
-            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            
+            padding: 50px 60px; /* Increased padding */
+            
+            /* 🚨 CHANGE 1: Subtle light grey background, semi-transparent */
+            background-color: rgba(200, 200, 200, 0.5); 
+            
             border-radius: 10px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6); /* Stronger shadow */
-            /* Keep the transition for a smooth initial display, but remove the transform:scale in :hover */
-            transition: transform 0.3s ease-out; 
+            /* 🚨 CHANGE 2: Removed box-shadow! */
+            
+            transition: transform 0.3s ease-out;
         }
         
-        /* 🚨 REMOVED the .content:hover rule here! */
-
-        .content h1 {
-            font-size: 3em;
-            margin-bottom: 0.2em;
+        /* New Logo Styling */
+        .logo {
+            width: 250px; /* Large size for the logo */
+            height: auto;
+            margin-bottom: 40px; /* Space between logo and button */
+            display: block; /* Ensures centered image behavior */
+        }
+        
+        /* New Button Styling (Clean and Modern) */
+        .modern-button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            color: #2c3e50; /* Darker text */
+            
+            /* Clean look with a subtle border and no background fill */
+            background-color: transparent; 
+            border: 2px solid #2c3e50; 
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
         }
 
-        .content p {
-            font-size: 1.2em;
-            font-weight: bold;
+        .modern-button:hover {
+            background-color: #2c3e50; /* Solid color on hover */
+            color: #ffffff; /* White text on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+
+        .modern-button:active {
+            transform: translateY(0); /* Press down effect */
         }
     </style>
 </head>
@@ -72,52 +91,43 @@
     <div id="zoomBackground" class="zoom-container"></div>
     
     <div class="content">
-        <h1>Interactive Background</h1>
-        <p>The foreground content is now perfectly steady.</p>
+        <img src="Freihaus Logo.svg" alt="Freihaus Logo" class="logo">
+        
+        <a href="test2.html" class="modern-button">Test Visualisierung</a>
     </div>
 
     <script>
         // Get the background element
         const background = document.getElementById('zoomBackground');
         
-        // Increased 'moveRange' for more movement
+        // Settings for the Parallax Effect
         const moveRange = 12; 
-        
-        // Increased zoom level to account for the larger shift
         const zoomLevel = '130%'; 
 
-        // Function to handle mouse movement
+        // Function to handle mouse movement (Parallax)
         document.addEventListener('mousemove', (e) => {
-            // 1. Get the center of the viewport (x and y)
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-
-            // 2. Calculate the difference between the mouse position and the center
             const diffX = e.clientX - centerX;
             const diffY = e.clientY - centerY;
-
-            // 3. Normalize the difference to a ratio (from -1 to 1)
             const ratioX = diffX / centerX; 
             const ratioY = diffY / centerY;
-
-            // 4. Calculate the background position shift (Opposite direction, scaled by moveRange)
+            
+            // Background moves in the opposite direction
             const offsetX = ratioX * moveRange * -1;
             const offsetY = ratioY * moveRange * -1;
             
-            // 5. Update the background position CSS property
             background.style.backgroundPosition = `calc(50% + ${offsetX}%) calc(50% + ${offsetY}%)`;
         });
         
-        // Function to handle mouse entering and leaving the page/content for the zoom effect
+        // Function to handle zoom effect on hover over the content box
         const content = document.querySelector('.content');
 
         content.addEventListener('mouseenter', () => {
-            // Zoom in a bit more when the mouse is over the content area
             background.style.backgroundSize = zoomLevel; 
         });
 
         content.addEventListener('mouseleave', () => {
-            // Zoom back out when the mouse leaves
             background.style.backgroundSize = '110%'; 
         });
 
