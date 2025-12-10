@@ -12,10 +12,12 @@
             --bike-size: 80px; 
             --animation-duration: 20s; 
 
+            /* --- CHANGE: Offset set to 0px for no gap --- */
+            --offset: 10px; 
+
             /* Variables defined in script and used here */
             --content-width: 370px; /* Placeholder: Updated by JS */
             --content-height: 440px; /* Placeholder: Updated by JS */
-            --offset: 50px; /* Distance from the content edge */
             --border-width: calc(var(--content-width) + 2 * var(--offset));
             --border-height: calc(var(--content-height) + 2 * var(--offset));
         }
@@ -141,18 +143,12 @@
             width: 100%;
             height: 100%;
             display: block;
-            /* Rotate the image so that when its rotation is 0deg, it appears to be riding right. */
-            /* Assuming Freihaus Bike.svg is usually oriented horizontally, we don't need a rotation here. */
         }
 
         /* Keyframes for the rectangular path and rotation */
         @keyframes cycleRectPath {
-            /* * Centering Fix: Subtract half the bike size from the translation 
-             * to align the center of the bike with the edge of the path.
-             * Rotation Fix: The bike must always face its direction of travel.
-             */
-             
-            /* 0% - Start: Top-Left Corner, riding Right (0deg) */
+            /* ========================================================================= */
+            /* START - 0% (Left side of Top edge) */
             0% {
                 transform: 
                     translate(
@@ -162,44 +158,125 @@
                     rotate(0deg); 
             }
 
-            /* 25% - Top-Right Corner, riding Down (90deg) */
+            /* --- TOP EDGE (Straight ride right) --- */
+            /* 24% - End of Top straight edge, right before corner */
+            24% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(0deg); /* No turn yet */
+            }
+
+            /* --- CORNER 1 (Quick turn down) --- */
+            /* 25% - Top-Right Corner */
             25% {
                 transform: 
                     translate(
                         calc(var(--border-width) - var(--bike-size) / 2), 
                         calc(0px - var(--bike-size) / 2)
                     ) 
-                    rotate(90deg); 
+                    rotate(90deg); /* Sharp turn */
             }
 
-            /* 50% - Bottom-Right Corner, riding Left (180deg) */
+            /* ========================================================================= */
+            /* --- RIGHT EDGE (Straight ride down) --- */
+            /* 26% - Start of Right straight edge */
+            26% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(90deg); /* Hold position */
+            }
+            
+            /* 49% - End of Right straight edge, right before corner */
+            49% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(90deg); /* No turn yet */
+            }
+
+            /* --- CORNER 2 (Quick turn left) --- */
+            /* 50% - Bottom-Right Corner */
             50% {
                 transform: 
                     translate(
                         calc(var(--border-width) - var(--bike-size) / 2), 
                         calc(var(--border-height) - var(--bike-size) / 2)
                     ) 
-                    rotate(180deg); 
+                    rotate(180deg); /* Sharp turn */
             }
 
-            /* 75% - Bottom-Left Corner, riding Up (270deg) */
+            /* ========================================================================= */
+            /* --- BOTTOM EDGE (Straight ride left) --- */
+            /* 51% - Start of Bottom straight edge */
+            51% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(180deg); /* Hold position */
+            }
+
+            /* 74% - End of Bottom straight edge, right before corner */
+            74% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(180deg); /* No turn yet */
+            }
+
+            /* --- CORNER 3 (Quick turn up) --- */
+            /* 75% - Bottom-Left Corner */
             75% {
                 transform: 
                     translate(
                         calc(0px - var(--bike-size) / 2), 
                         calc(var(--border-height) - var(--bike-size) / 2)
                     ) 
-                    rotate(270deg); 
+                    rotate(270deg); /* Sharp turn */
             }
 
-            /* 100% - Back to Start: Top-Left Corner, continuing Right (360deg) */
+            /* ========================================================================= */
+            /* --- LEFT EDGE (Straight ride up) --- */
+            /* 76% - Start of Left straight edge */
+            76% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(270deg); /* Hold position */
+            }
+
+            /* 99% - End of Left straight edge, right before start */
+            99% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(270deg); /* No turn yet */
+            }
+
+            /* --- CORNER 4 (Quick turn right to finish) --- */
+            /* 100% - Back to Start: Top-Left Corner */
             100% {
                 transform: 
                     translate(
                         calc(0px - var(--bike-size) / 2), 
                         calc(0px - var(--bike-size) / 2)
                     ) 
-                    rotate(360deg); 
+                    rotate(360deg); /* Sharp turn to complete the cycle */
             }
         }
     </style>
@@ -226,11 +303,10 @@
         const pathContainer = document.getElementById('bikePathContainer');
         const moveRange = 12; 
         const zoomLevel = '110%'; 
-        const offset = 50; // Must match the CSS variable --offset
+        const offset = 0; // --- CHANGE: Offset set to 0 ---
 
         // Function to dynamically calculate and update CSS variables
         function updateBikePathDimensions() {
-            // Get the actual width and height of the content box (including padding)
             const contentRect = content.getBoundingClientRect();
             
             // Calculate content dimensions (width + 2*padding)
@@ -238,6 +314,7 @@
             const contentHeight = contentRect.height;
 
             // Calculate the total path dimensions (Content + 2*Offset)
+            // Since offset is 0, borderWidth will equal contentWidth, and borderHeight will equal contentHeight.
             const borderWidth = contentWidth + 2 * offset;
             const borderHeight = contentHeight + 2 * offset;
 
@@ -253,6 +330,7 @@
 
         // Initialize and update on resize
         updateBikePathDimensions();
+        // The offset in the JavaScript needs to match the CSS variable, so we pass the new value
         window.addEventListener('resize', updateBikePathDimensions);
 
 
