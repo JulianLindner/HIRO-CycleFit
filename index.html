@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freihaus CycleFit - Clean Design</title>
+    <title>Freihaus CycleFit</title>
     <style>
         body {
             /* Set the entire viewport to be the container */
@@ -20,19 +20,38 @@
         }
 
         .zoom-container {
-            /* Background remains the same */
+            /* 1. Set the SVG as the background image */
             background-image: url('Freihaus drawing.svg');
-            background-size: 110%;
+            
+            /* Background Sizing/Positioning */
+            background-size: cover; 
             background-position: 50% 50%;
             background-repeat: no-repeat;
+            
+            /* Layout */
             width: 100%;
             height: 100%;
             position: absolute; 
             top: 0;
             left: 0;
             z-index: -1; 
-            transition: background-position 0.2s ease-out, background-size 0.5s ease-out;
+            
+            /* SMOOTHNESS: Apply transition to everything, including the transform */
+            transition: background-position 0.2s ease-out, background-size 0.5s ease-out, transform 0.5s ease-in-out;
+            
+            /* Initial state: no rotation */
+            transform: rotate(0deg); 
         }
+
+        /* 🚨 NEW: Media Query for Narrow Screens (Max width 600px) */
+        @media (max-width: 600px) {
+            .zoom-container {
+                /* Flip the image 180 degrees (upside down) */
+                transform: rotate(180deg); 
+            }
+        }
+        /* End of Media Query */
+
 
         /* Styling for the fixed content layer */
         .content {
@@ -40,35 +59,28 @@
             flex-direction: column;
             justify-content: space-around;
             align-items: center;
-            
-            padding: 50px 60px; /* Increased padding */
-            
-            /* 🚨 CHANGE 1: Subtle light grey background, semi-transparent */
+            padding: 50px 60px;
             background-color: rgba(200, 200, 200, 0.5); 
-            
             border-radius: 10px;
-            /* 🚨 CHANGE 2: Removed box-shadow! */
-            
+            /* Keep content steady, no transform here */
             transition: transform 0.3s ease-out;
         }
         
-        /* New Logo Styling */
+        /* Logo Styling */
         .logo {
-            width: 250px; /* Large size for the logo */
+            width: 250px; 
             height: auto;
-            margin-bottom: 40px; /* Space between logo and button */
-            display: block; /* Ensures centered image behavior */
+            margin-bottom: 40px; 
+            display: block; 
         }
         
-        /* New Button Styling (Clean and Modern) */
+        /* Button Styling */
         .modern-button {
             padding: 15px 30px;
             font-size: 1.1em;
             font-weight: 600;
             text-decoration: none;
-            color: #2c3e50; /* Darker text */
-            
-            /* Clean look with a subtle border and no background fill */
+            color: #2c3e50; 
             background-color: transparent; 
             border: 2px solid #2c3e50; 
             border-radius: 5px;
@@ -77,13 +89,13 @@
         }
 
         .modern-button:hover {
-            background-color: #2c3e50; /* Solid color on hover */
-            color: #ffffff; /* White text on hover */
-            transform: translateY(-2px); /* Subtle lift effect */
+            background-color: #2c3e50;
+            color: #ffffff;
+            transform: translateY(-2px);
         }
 
         .modern-button:active {
-            transform: translateY(0); /* Press down effect */
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -92,17 +104,15 @@
     
     <div class="content">
         <img src="Freihaus Logo.svg" alt="Freihaus Logo" class="logo">
-        
         <a href="test2.html" class="modern-button">Test Visualisierung</a>
+        <p>"Aktuell noch in Bau :)"</p>
     </div>
 
     <script>
-        // Get the background element
         const background = document.getElementById('zoomBackground');
         
-        // Settings for the Parallax Effect
         const moveRange = 12; 
-        const zoomLevel = '130%'; 
+        const zoomLevel = '110%'; 
 
         // Function to handle mouse movement (Parallax)
         document.addEventListener('mousemove', (e) => {
@@ -128,7 +138,7 @@
         });
 
         content.addEventListener('mouseleave', () => {
-            background.style.backgroundSize = '110%'; 
+            background.style.backgroundSize = 'cover'; 
         });
 
     </script>
