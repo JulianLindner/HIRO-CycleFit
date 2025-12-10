@@ -7,79 +7,70 @@
     <style>
         :root {
             /* Define variables for easy tweaking */
-            --content-bg-color: rgba(200, 200, 200, 0.6); /* Slightly more opaque for better contrast */
+            --content-bg-color: rgba(200, 200, 200, 0.6); 
             --primary-color: #2c3e50;
-            --bike-size: 80px; /* Size of the cycling SVG */
-            --orbit-radius: 40vh; /* Radius of the orbit */
-            --animation-duration: 40s; /* Time for one full cycle */
+            --bike-size: 80px; 
+            --animation-duration: 20s; 
+
+            /* Variables defined in script and used here */
+            --content-width: 370px; /* Placeholder: Updated by JS */
+            --content-height: 440px; /* Placeholder: Updated by JS */
+            --offset: 50px; /* Distance from the content edge */
+            --border-width: calc(var(--content-width) + 2 * var(--offset));
+            --border-height: calc(var(--content-height) + 2 * var(--offset));
         }
         
         body {
-            /* Set the entire viewport to be the container */
             margin: 0;
             padding: 0;
             height: 100vh;
-            display: flex; /* For centering the text */
+            display: flex; 
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Prevents scrollbars */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
-            color: #333; /* Dark text for contrast against light grey */
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #333; 
             perspective: 1000px; 
         }
 
         .zoom-container {
-            /* 1. Set the SVG as the background image */
             background-image: url('Freihaus drawing.svg');
-            
-            /* Background Sizing/Positioning */
             background-size: cover; 
             background-position: 50% 50%;
             background-repeat: no-repeat;
-            
-            /* Layout */
             width: 100%;
             height: 100%;
             position: absolute; 
             top: 0;
             left: 0;
             z-index: -1; 
-            
-            /* SMOOTHNESS: Apply transition to everything, including the transform */
             transition: background-position 0.2s ease-out, background-size 0.5s ease-out, transform 0.5s ease-in-out;
-            
-            /* Initial state: no rotation */
             transform: rotate(0deg); 
         }
 
-        /* 🚨 NEW: Media Query for Narrow Screens (Max width 600px) */
         @media (max-width: 600px) {
             .zoom-container {
-                /* Flip the image 180 degrees (upside down) */
                 transform: rotate(180deg); 
             }
         }
-        /* End of Media Query */
 
 
         /* Styling for the fixed content layer */
         .content {
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Changed from space-around to center */
+            justify-content: center; 
             align-items: center;
             padding: 50px 60px;
             background-color: var(--content-bg-color); 
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Subtle shadow */
-
-            /* --- CHANGE: Constraint the size to be always smaller than the screen --- */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
             max-width: 90vw;
             max-height: 90vh;
-            /* Keep content steady, no transform here */
             transition: transform 0.3s ease-out;
-            z-index: 10; /* Ensure content is above the background and the bike orbit */
-            position: relative; /* Needed for z-index and potentially future positioning */
+            z-index: 10; 
+            position: relative;
+            box-sizing: content-box; 
         }
         
         /* Logo Styling */
@@ -102,8 +93,6 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
-            
-            /* --- CHANGE: Added margin for spacing between buttons --- */
             margin-top: 15px; 
         }
 
@@ -118,76 +107,113 @@
         }
 
         /* ================================================= */
-        /* === BIKE ANIMATION STYLES ======================= */
+        /* === BIKE RECTANGULAR ANIMATION STYLES (FIXED) === */
         /* ================================================= */
 
-        /* 1. Container for the animation, placed on the whole screen */
-        .bike-cycler {
+        /* The container for the entire animation path */
+        .bike-path-container {
             position: absolute;
             top: 50%;
             left: 50%;
-            /* Move back by the orbit radius so the bike starts from the side */
-            width: 1px;
-            height: 1px;
-            transform: translate(-50%, -50%); /* Center the origin point */
-            animation: cycleOrbit var(--animation-duration) linear infinite;
-            z-index: 5; /* Ensure the bike is between the background and the content */
-            transform-origin: 0 0; /* Set rotation origin to the center */
+            /* Offset back by half the path dimensions to center it */
+            transform: translate(
+                calc(var(--border-width) / -2), 
+                calc(var(--border-height) / -2)
+            );
+            width: var(--border-width); 
+            height: var(--border-height); 
+            pointer-events: none; 
+            z-index: 5; 
         }
 
-        /* 2. The bike itself, positioned along the orbit radius */
+        /* The animated element that moves along the rectangle path */
         .animated-bike {
             position: absolute;
             width: var(--bike-size);
             height: var(--bike-size);
-            /* Move the bike along the X-axis by the orbit radius */
-            transform: translateX(var(--orbit-radius)) translateY(calc(var(--bike-size) / -2));
-            /* Counter-rotate the bike so it stays upright (or close to it) */
-            animation: counterRotate var(--animation-duration) linear infinite; 
             transform-origin: center center;
+            
+            /* Apply the keyframe animation */
+            animation: cycleRectPath var(--animation-duration) linear infinite;
         }
 
         .animated-bike img {
             width: 100%;
             height: 100%;
             display: block;
+            /* Rotate the image so that when its rotation is 0deg, it appears to be riding right. */
+            /* Assuming Freihaus Bike.svg is usually oriented horizontally, we don't need a rotation here. */
         }
 
-
-        /* Keyframes for the main orbit (applied to .bike-cycler) */
-        @keyframes cycleOrbit {
-            from {
-                transform: translate(-50%, -50%) rotate(0deg);
+        /* Keyframes for the rectangular path and rotation */
+        @keyframes cycleRectPath {
+            /* * Centering Fix: Subtract half the bike size from the translation 
+             * to align the center of the bike with the edge of the path.
+             * Rotation Fix: The bike must always face its direction of travel.
+             */
+             
+            /* 0% - Start: Top-Left Corner, riding Right (0deg) */
+            0% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(0deg); 
             }
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
+
+            /* 25% - Top-Right Corner, riding Down (90deg) */
+            25% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(90deg); 
+            }
+
+            /* 50% - Bottom-Right Corner, riding Left (180deg) */
+            50% {
+                transform: 
+                    translate(
+                        calc(var(--border-width) - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(180deg); 
+            }
+
+            /* 75% - Bottom-Left Corner, riding Up (270deg) */
+            75% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(var(--border-height) - var(--bike-size) / 2)
+                    ) 
+                    rotate(270deg); 
+            }
+
+            /* 100% - Back to Start: Top-Left Corner, continuing Right (360deg) */
+            100% {
+                transform: 
+                    translate(
+                        calc(0px - var(--bike-size) / 2), 
+                        calc(0px - var(--bike-size) / 2)
+                    ) 
+                    rotate(360deg); 
             }
         }
-        
-        /* Keyframes for counter-rotation (applied to .animated-bike) */
-        @keyframes counterRotate {
-            from {
-                /* Start with a slight offset to simulate a dynamic look */
-                transform: translateX(var(--orbit-radius)) translateY(calc(var(--bike-size) / -2)) rotate(0deg); 
-            }
-            to {
-                /* Counter-rotate by 360 degrees to negate the parent's rotation */
-                transform: translateX(var(--orbit-radius)) translateY(calc(var(--bike-size) / -2)) rotate(-360deg);
-            }
-        }
-
     </style>
 </head>
 <body>
     <div id="zoomBackground" class="zoom-container"></div>
     
-    <div class="bike-cycler">
+    <div id="bikePathContainer" class="bike-path-container">
         <div class="animated-bike">
             <img src="Freihaus Bike.svg" alt="Animated Bicycle" class="bike-image">
         </div>
     </div>
 
-    <div class="content">
+    <div id="contentBox" class="content">
         <img src="Freihaus Logo.svg" alt="Freihaus Logo" class="logo">
         <a href="test2.html" class="modern-button">Mein Test</a>
         <a href="Earth.html" class="modern-button">Earth</a>
@@ -196,11 +222,41 @@
 
     <script>
         const background = document.getElementById('zoomBackground');
-        
+        const content = document.getElementById('contentBox');
+        const pathContainer = document.getElementById('bikePathContainer');
         const moveRange = 12; 
         const zoomLevel = '110%'; 
+        const offset = 50; // Must match the CSS variable --offset
 
-        // Function to handle mouse movement (Parallax)
+        // Function to dynamically calculate and update CSS variables
+        function updateBikePathDimensions() {
+            // Get the actual width and height of the content box (including padding)
+            const contentRect = content.getBoundingClientRect();
+            
+            // Calculate content dimensions (width + 2*padding)
+            const contentWidth = contentRect.width; 
+            const contentHeight = contentRect.height;
+
+            // Calculate the total path dimensions (Content + 2*Offset)
+            const borderWidth = contentWidth + 2 * offset;
+            const borderHeight = contentHeight + 2 * offset;
+
+            // Update CSS variables on the root and the path container
+            document.documentElement.style.setProperty('--content-width', `${contentWidth}px`);
+            document.documentElement.style.setProperty('--content-height', `${contentHeight}px`);
+            document.documentElement.style.setProperty('--border-width', `${borderWidth}px`);
+            document.documentElement.style.setProperty('--border-height', `${borderHeight}px`);
+            
+            // Center the path container based on the new dimensions
+            pathContainer.style.transform = `translate(${borderWidth / -2}px, ${borderHeight / -2}px)`;
+        }
+
+        // Initialize and update on resize
+        updateBikePathDimensions();
+        window.addEventListener('resize', updateBikePathDimensions);
+
+
+        // Parallax Effect
         document.addEventListener('mousemove', (e) => {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
@@ -209,16 +265,13 @@
             const ratioX = diffX / centerX; 
             const ratioY = diffY / centerY;
             
-            // Background moves in the opposite direction
             const offsetX = ratioX * moveRange * -1;
             const offsetY = ratioY * moveRange * -1;
             
             background.style.backgroundPosition = `calc(50% + ${offsetX}%) calc(50% + ${offsetY}%)`;
         });
         
-        // Function to handle zoom effect on hover over the content box
-        const content = document.querySelector('.content');
-
+        // Zoom Effect
         content.addEventListener('mouseenter', () => {
             background.style.backgroundSize = zoomLevel; 
         });
