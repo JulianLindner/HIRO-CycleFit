@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AR.js Earth Demo</title>
+    <meta name="description" content="AR.js Earth Demo">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <a-scene arjs='sourceType: webcam; trackingMethod: best;' 
+             renderer="logarithmicDepthBuffer: true; antialias: true;">
+
+      <a-assets>
+        <img id='earth' src='https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/space/earth_atmos_4096.jpg' />
+      </a-assets>
+      
+      <a-marker type="pattern" url="https://melanie-platz.github.io/AR-HIRO/pattern-marker.patt">
+        <a-sphere 
+          material='src: #earth;' 
+          position="0 0.5 0" 
+          radius="1" 
+          segments-height="53"
+          rotation="90 0 0"> <a-animation 
+            attribute="rotation" 
+            dur="7000" 
+            to="90 360 0" 
+            easing="linear" 
+            repeat="indefinite">
+          </a-animation>
+        </a-sphere>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
+</html>
