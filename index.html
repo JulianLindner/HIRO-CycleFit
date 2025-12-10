@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smooth Zooming Background</title>
+    <title>Freihaus CycleFit</title>
     <style>
         body {
             /* Set the entire viewport to be the container */
@@ -13,20 +13,21 @@
             display: flex; /* For centering the text */
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Prevents scrollbars during zoom */
+            overflow: hidden; /* Prevents scrollbars */
             font-family: sans-serif;
             color: #ffffff; /* Text color */
+            perspective: 1000px; /* Needed for 3D effects, though not strictly required here */
         }
 
         .zoom-container {
             /* 1. Set the SVG as the background image */
             background-image: url('Freihaus drawing.svg');
             
-            /* 2. Initial state: Cover the entire area */
-            background-size: cover; 
+            /* 2. Initial state: Slightly zoomed in to allow for movement */
+            background-size: 110%; /* Starts at 110% */
             
-            /* 3. Keep the image centered */
-            background-position: center center;
+            /* 3. Keep the image centered initially (position will be updated by JS) */
+            background-position: 50% 50%;
             
             /* 4. Do not repeat the image */
             background-repeat: no-repeat;
@@ -34,28 +35,29 @@
             /* Make the container fill the screen */
             width: 100%;
             height: 100%;
-            position: absolute; /* Allows it to cover the body */
+            position: absolute; 
             top: 0;
             left: 0;
-            z-index: -1; /* Place it behind the content */
+            z-index: -1; 
 
-            /* 5. THE MAGIC: Apply a smooth transition effect */
-            /* Transition background-size over 0.5 seconds with a gentle ease-out curve */
-            transition: background-size 0.5s ease-out;
+            /* 5. SMOOTHNESS: Apply a smooth transition for the movement */
+            /* We only transition the position for smoothness, not the size */
+            transition: background-position 0.2s ease-out, background-size 0.5s ease-out;
         }
 
-        .zoom-container:hover {
-            /* 6. Hover state: Zoom in by making the background image 110% of its size */
-            /* You can adjust this percentage (e.g., 120%) for more zoom */
-            background-size: 110%;
-        }
-
-        /* Styling for the content layer */
+        /* Styling for the fixed content layer */
         .content {
             text-align: center;
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay for readability */
+            padding: 30px 40px;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
             border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            /* Optional: Add a subtle 3D tilt on hover for the foreground */
+            transition: transform 0.3s ease-out;
+        }
+        
+        .content:hover {
+            transform: scale(1.05);
         }
 
         .content h1 {
@@ -69,12 +71,61 @@
     </style>
 </head>
 <body>
-    <div class="zoom-container"></div>
+    <div id="zoomBackground" class="zoom-container"></div>
     
     <div class="content">
-        <h1>Zoom Effect Demo</h1>
-        <p>Hover your mouse over this area to see the background image zoom smoothly.</p>
-        <p>The **freihaus drawing.svg** is the background.</p>
+        <h1>Interactive Background</h1>
+        <p>Move your mouse around to see the **freihaus drawing.svg** subtly shift and follow your gaze.</p>
     </div>
+
+    <script>
+        // Get the background element
+        const background = document.getElementById('zoomBackground');
+        
+        // Define how much the background should move (in pixels or %)
+        const moveRange = 5; // The SVG will move +/- 5% from its center
+        const zoomLevel = '120%'; // Slightly more zoom than the initial 110%
+
+        // Function to handle mouse movement
+        document.addEventListener('mousemove', (e) => {
+            // 1. Get the center of the viewport (x and y)
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            // 2. Calculate the difference between the mouse position and the center
+            // This gives us values that are negative on the left/top and positive on the right/bottom
+            const diffX = e.clientX - centerX;
+            const diffY = e.clientY - centerY;
+
+            // 3. Normalize the difference to a percentage (from -1 to 1)
+            // Divide by the half-width/height to get a ratio
+            const ratioX = diffX / centerX; 
+            const ratioY = diffY / centerY;
+
+            // 4. Calculate the background position shift
+            // We want the background to move in the *opposite* direction of the mouse
+            // If the mouse is on the right (+ratioX), the background shifts left (-moveRange)
+            const offsetX = ratioX * moveRange * -1;
+            const offsetY = ratioY * moveRange * -1;
+            
+            // 5. Update the background position CSS property
+            // We start from 50% and add the calculated offset
+            background.style.backgroundPosition = `calc(50% + ${offsetX}%) calc(50% + ${offsetY}%)`;
+        });
+        
+        // Function to handle mouse entering and leaving the page/content for the zoom effect
+        const content = document.querySelector('.content');
+
+        content.addEventListener('mouseenter', () => {
+            // Zoom in a bit more when the mouse is over the content area
+            background.style.backgroundSize = zoomLevel; 
+        });
+
+        content.addEventListener('mouseleave', () => {
+            // Zoom back out when the mouse leaves
+            background.style.backgroundSize = '110%'; 
+        });
+
+    </script>
 </body>
 </html>
