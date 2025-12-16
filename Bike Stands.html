@@ -1,0 +1,67 @@
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/examples/vendor/aframe/build/aframe.min.js"></script>
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/build/aframe-ar.js"></script>
+
+<head>
+  <script>
+    /* PASTE THE AFRAME.registerComponent CODE HERE */
+    AFRAME.registerComponent('bike-stand-row', {
+            schema: {
+                count: { type: 'int', default: 4 },
+                spacing: { type: 'number', default: 1.5 },
+                color: { type: 'color', default: '#4CAF50' }
+            },
+            init: function () {
+                const data = this.data;
+                const el = this.el;
+                const material = `color: ${data.color}; metalness: 0.8; roughness: 0.2`;
+                const standTemplate = document.createElement('a-entity');
+                
+                // Geometry definition (posts and bar)
+                const createBox = (pos, w, h, d) => {
+                    const box = document.createElement('a-box');
+                    box.setAttribute('position', pos);
+                    box.setAttribute('width', w);
+                    box.setAttribute('height', h);
+                    box.setAttribute('depth', d);
+                    box.setAttribute('material', material);
+                    return box;
+                };
+
+                standTemplate.appendChild(createBox('-0.5 0.5 0', '0.1', '1.0', '0.1')); // Left Post
+                standTemplate.appendChild(createBox('0.5 0.5 0', '0.1', '1.0', '0.1')); // Right Post
+                standTemplate.appendChild(createBox('0 1.0 0', '1.1', '0.1', '0.1'));  // Top Bar
+
+                // Cloning loop
+                for (let i = 0; i < data.count; i++) {
+                    const stand = standTemplate.cloneNode(true);
+                    const xPosition = i * data.spacing;
+                    stand.setAttribute('position', `${xPosition} 0 0`);
+                    el.appendChild(stand);
+                }
+            }
+        });
+  </script>
+</head>
+
+<body style='margin : 0px; overflow: hidden;'>
+  <a-scene background="color: #ECECEC">
+      <a-anchor hit-testing-enabled='true'>
+          
+          <a-entity 
+              bike-stand-row="count: 6; spacing: 1.5" 
+              position="-4 0 0">
+          </a-entity>
+
+          <a-plane 
+              rotation="-90 0 0" 
+              width="20" 
+              height="5" 
+              color="#7BC8A4">
+          </a-plane>
+
+      </a-anchor>
+      <a-entity camera position="0 1.6 8"></a-entity>
+  </a-scene>
+</body>
+
+<style></style>
