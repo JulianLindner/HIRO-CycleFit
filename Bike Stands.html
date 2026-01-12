@@ -5,39 +5,39 @@
   <script>
     /* PASTE THE AFRAME.registerComponent CODE HERE */
     AFRAME.registerComponent('bike-stand-row', {
-            schema: {
-                count: { type: 'int', default: 4 },
-                spacing: { type: 'number', default: 1.5 },
-                color: { type: 'color', default: '#4CAF50' }
-            },
-            init: function () {
-                const data = this.data;
-                const el = this.el;
-                const material = `color: ${data.color}; metalness: 0.8; roughness: 0.2`;
-                const standTemplate = document.createElement('a-entity');
-                
-                // Geometry definition (posts and bar)
-                const createBox = (pos, w, h, d) => {
-                    const box = document.createElement('a-box');
-                    box.setAttribute('position', pos);
-                    box.setAttribute('width', w);
-                    box.setAttribute('height', h);
-                    box.setAttribute('depth', d);
-                    box.setAttribute('material', material);
-                    return box;
-                };
+          schema: {
+              count: { type: 'int', default: 4 },
+              spacing: { type: 'number', default: 1.5 },
+              color: { type: 'color', default: '#4CAF50' }
+          },
+          init: function () {
+              const data = this.data;
+              const el = this.el;
+              const material = `color: ${data.color}; metalness: 0.8; roughness: 0.2`;
+              const standTemplate = document.createElement('a-entity');
+              
+              // Geometry definition (posts and bar)
+              const createBox = (pos, w, h, d) => {
+                  const box = document.createElement('a-box');
+                  box.setAttribute('position', pos);
+                  box.setAttribute('width', w);
+                  box.setAttribute('height', h);
+                  box.setAttribute('depth', d);
+                  box.setAttribute('material', material);
+                  return box;
+              };
 
-                standTemplate.appendChild(createBox('-0.5 0.5 0', '0.1', '1.0', '0.1')); // Left Post
-                standTemplate.appendChild(createBox('0.5 0.5 0', '0.1', '1.0', '0.1')); // Right Post
-                standTemplate.appendChild(createBox('0 1.0 0', '1.1', '0.1', '0.1'));  // Top Bar
+              standTemplate.appendChild(createBox('-0.5 0.5 0', '0.1', '1.0', '0.1')); // Left Post
+              standTemplate.appendChild(createBox('0.5 0.5 0', '0.1', '1.0', '0.1')); // Right Post
+              standTemplate.appendChild(createBox('0 1.0 0', '1.1', '0.1', '0.1'));  // Top Bar
 
-                // Cloning loop
-                for (let i = 0; i < data.count; i++) {
-                    const stand = standTemplate.cloneNode(true);
-                    const xPosition = i * data.spacing;
-                    stand.setAttribute('position', `${xPosition} 0 0`);
-                    el.appendChild(stand);
-                }
+              // Cloning loop
+              for (let i = 0; i < data.count; i++) {
+                  const stand = standTemplate.cloneNode(true);
+                  const xPosition = i * data.spacing;
+                  stand.setAttribute('position', `${xPosition} 0 0`);
+                  el.appendChild(stand);
+              }
             }
         });
   </script>
